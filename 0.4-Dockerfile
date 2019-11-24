@@ -1,0 +1,31 @@
+# Minimal Haskell executable using multi-stage builds
+# Approximately 20MB docker image natively
+# When using UPX, I get about a 7 MB docker image
+
+FROM haskell:8.6.5 as build
+
+# install UPX compression tool
+ADD https://github.com/upx/upx/releases/download/v3.95/upx-3.95-amd64_linux.tar.xz /usr/local
+RUN xz -d -c /usr/local/upx-3.95-amd64_linux.tar.xz | tar -xOf - upx-3.95-amd64_linux/upx > /bin/upx && chmod a+x /bin/upx
+
+# Build Haskell dependencies
+RUN mkdir -p /app/user
+WORKDIR /app/user
+COPY stack.yaml package.yaml stack.yaml.lock /app/user/
+RUN stack build --system-ghc --dependencies-only --split-objs
+
+# Build project
+COPY . .
+RUN stack build --system-ghc --copy-bins --split-objs 
+RUN strip /root/.local/bin/webScotty-exe \
+&& upx /root/.local/bin/webScotty-exe
+
+# ----------------------------------------
+
+FROM fpco/haskell-scratch:integer-gmp
+
+# Copy executable over from build image, and run it
+EXPOSE 3000
+WORKDIR /app
+COPY --from=build /root/.local/bin .
+ENTRYPOINT ["/app/webScotty-exe"]

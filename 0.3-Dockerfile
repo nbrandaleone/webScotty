@@ -1,0 +1,27 @@
+# Minimal Haskell build using Alpine as a build image
+# NOT WORKING. ERROR
+
+FROM alpine:latest as build
+RUN apk update \
+    && apk add --no-cache wget ca-certificates ghc gmp-dev \
+	musl-dev linux-headers zlib-dev \
+    && update-ca-certificates
+RUN wget -qO- https://get.haskellstack.org/ | sh
+RUN mkdir /build
+COPY . /build
+WORKDIR /build
+RUN sed -i 's/lts-14.15/lts-12.14/' stack.yaml \
+    && stack config set system-ghc --global true \
+    && stack setup 
+RUN stack build --system-ghc --copy-bins
+#RUN mv "$(stack path --local-install-root --system-ghc)/bin" /build/bin
+# ----------------------------------------
+#FROM fpco/haskell-scratch:integer-gmp
+FROM alpine:latest
+RUN apk update && apk add --no-cache gmp
+
+WORKDIR /usr/local/bin
+#COPY --from=build /root/.local/bin/webScotty-exe /usr/local/bin/app
+COPY --from=build /root/.local/bin .
+EXPOSE 3000
+CMD ["/usr/local/bin/webScotty-exe"]

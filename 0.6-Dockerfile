@@ -1,0 +1,31 @@
+# Minimal Haskell executable using multi-stage builds
+# Approximately 20MB docker image natively
+# When using UPX, I get about a 7 MB docker image
+# When creating a static built image, and UPX, I get a 3.3 MB image.
+#
+# NOTE: for static, I had to alter the cabal file (executable section)
+# executable webScotty-exe
+#   main-is: Main.hs
+#     ld-options: -static
+
+FROM haskell:8.6.5 as build
+
+# Build Haskell dependencies
+RUN mkdir -p /app/user
+WORKDIR /app/user
+COPY stack.yaml package.yaml stack.yaml.lock /app/user/
+RUN stack build --system-ghc --dependencies-only --ghc-options=-fPIC
+
+# Build project
+COPY . .
+RUN stack build --system-ghc --copy-bins --ghc-options=-fPIC
+
+# ----------------------------------------
+
+FROM scratch
+
+# Copy executable over from build image, and run it
+EXPOSE 3000
+WORKDIR /app
+COPY --from=build /root/.local/bin .
+CMD ["/app/webScotty-exe"]

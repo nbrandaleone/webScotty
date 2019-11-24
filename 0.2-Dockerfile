@@ -1,0 +1,50 @@
+# Multi-stage build for Haskell
+# November 2019
+
+# Loosely based on https://www.fpcomplete.com/blog/2017/12/building-haskell-apps-with-docker
+# https://medium.com/permutive/optimized-docker-builds-for-haskell-76a9808eb10b
+# DOES NOT WORK. See error at bottom.
+
+FROM fpco/stack-build:lts-14.15 as dependencies
+RUN mkdir /opt/build
+WORKDIR /opt/build
+
+# GHC dynamically links its compilation target to lib gmp
+RUN apt-get update && apt-get install -y ca-certificates libgmp10
+
+# Docker build should not use cached layer if any of these are modified
+COPY stack.yaml package.yaml stack.yaml.lock /opt/build/
+RUN stack build --system-ghc --dependencies-only
+
+# -----------------------------------------------
+FROM fpco/stack-build:lts-14.15 as build
+
+# Copy compiled dependencies from previous stage
+COPY --from=dependencies /root/.stack /root/.stack
+COPY . /opt/build/
+
+WORKDIR /opt/build
+
+RUN stack build --system-ghc
+
+RUN mv "$(stack path --local-install-root --system-ghc)/bin" /opt/build/bin
+
+# ------------------------------------------------
+FROM fpco/haskell-scratch:integer-gmp as app
+# FROM fpco/haskell-scratch:integer-simple as app
+# FROM fpco/haskell-scratch:latest as app
+WORKDIR /usr/bin/
+
+# Install lib gmp
+#RUN apt-get update && apt-get install -y ca-certificates libgmp10
+
+COPY --from=build /opt/build/bin /usr/bin/
+
+EXPOSE 3000
+CMD ["/usr/bin/webScotty-exe"]
+
+##
+## Does not work
+# /usr/bin/webScotty-exe: /lib/x86_64-linux-gnu/libm.so.6: version `GLIBC_2.27' not found (required by /usr/bin/webScotty-exe)
+##
+##
