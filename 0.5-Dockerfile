@@ -1,6 +1,6 @@
 # Minimal Haskell executable using multi-stage builds
 #
-# When using mult-build to Ubuntu I get a 113 MB image (tag 0.1)
+# When using a multi-stage build to Ubuntu I get a 113 MB image (tag 0.1)
 # Approximately a 22 MB docker image when using alpine (tag 0.3)
 # A statically built image is about 16 MB (tag 0.6)
 # When using UPX and alpine, I get about a 7 MB docker image (tag 0.4)
