@@ -16,13 +16,13 @@ I created several versions of the Docker image, trying to get a minimal image si
 In the final Docker image (tag: 0.5), I also used an amazing binary compression tool: [UPX](https://upx.github.io).  UPX is easy to use, and does a fantastic job of reducing the binary size.
 
 ## Multi-Stage docker build sizes
-| Base image | Final image | Additional Tooling | Final Size | Tag |
-| --- | --- | --- | --- | --- |
-| fpco/stack-build:lts-14.15 | ubuntu:18.04 | NA | 113 MB | 0.1 |
-| haskell:8.6.5 | fpco/haskell-scratch:integer-gmp | NA | 22 MB | 0.3 |
-| haskell:8.6.5 | scratch | NA | 16 MB | 0.6 |
-| haskell:8.6.5 | fpco/haskell-scratch:integer-gmp | UPX | 7 MB | 0.4 |
-| haskell:8.6.5 | scratch | UPX | 3.3 MB | 0.5 |
+| Base image | Final image | Tooling | Type | Final Size | Tag |
+| --- | --- | --- | --- | --- | --- |
+| fpco/stack-build:lts-14.15 | ubuntu:18.04 | NA | dynamic | 113 MB | 0.1 |
+| haskell:8.6.5 | fpco/haskell-scratch:integer-gmp | NA | dynamic | 22 MB | 0.3 |
+| haskell:8.6.5 | scratch | NA | static | 16 MB | 0.6 |
+| haskell:8.6.5 | fpco/haskell-scratch:integer-gmp | UPX | dynamic | 7 MB | 0.4 |
+| haskell:8.6.5 | scratch | UPX | static | 3.3 MB | 0.5 |
 
 ## How to create a statically compiled Haskell binary
 Haskell is typically dynamically compiled.  However, it is not
