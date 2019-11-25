@@ -64,7 +64,7 @@ This demo uses TCP port 3000.
 
 ### Server
 ```
-docker run -p 3000:3000 webscotty:0.5
+$ docker run -p 3000:3000 webscotty:0.5
 Setting phasers to stun... (port 3000) (ctrl-c to quit)
 GET /beam
   Accept: */*
