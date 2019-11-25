@@ -77,8 +77,8 @@ GET /health
 
 ### Client
 ```
-$ curl localhost:3000/hi
-<h1>Scotty, hi me up!</h1>
+$ curl localhost:3000/beam
+<h1>Scotty, beam me up!</h1>
 
 $ curl localhost:3000/health
 UP
