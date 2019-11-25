@@ -37,7 +37,7 @@ In the `stack build` section, add "-fPIC" option.
 and add "--ghc-options=-fPIC" to any stack "build" commands
 executable webScotty-exe
   main-is: Main.hs
-    ld-options: -static
+  ld-options: -static
 ```
 
 ## Code (app/Main.hs)
