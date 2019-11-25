@@ -39,3 +39,48 @@ executable webScotty-exe
   main-is: Main.hs
     ld-options: -static
 ```
+
+## Code (app/Main.hs)
+```
+{-# LANGUAGE OverloadedStrings #-}
+module Main where
+
+import Web.Scotty
+import Network.Wai.Middleware.RequestLogger
+import Data.Monoid (mconcat)
+
+main = scotty 3000 $ do
+  middleware logStdoutDev
+    get "/health" $ do
+	  text "UP"
+
+    get "/:word" $ do
+	  beam <- param "word"
+      html $ mconcat ["<h1>Scotty, ", beam, " me up!</h1>"]
+```
+
+## Usage
+This demo uses TCP port 3000.
+
+### Server
+```
+docker run -p 3000:3000 webscotty:0.5
+Setting phasers to stun... (port 3000) (ctrl-c to quit)
+GET /beam
+  Accept: */*
+    Status: 200 OK 0.000087978s
+
+GET /health
+  Accept: */*
+    Status: 200 OK 0.00003081s
+```
+
+### Client
+```
+$ curl localhost:3000/hi
+<h1>Scotty, hi me up!</h1>
+
+$ curl localhost:3000/health
+UP
+```
+
