@@ -23,3 +23,17 @@ In the final Docker image (tag: 0.5), I also used an amazing binary compression 
 | haskell:8.6.5 | scratch | NA | 16 MB | 0.6 |
 | haskell:8.6.5 | fpco/haskell-scratch:integer-gmp | UPX | 7 MB | 0.4 |
 | haskell:8.6.5 | scratch | UPX | 3.3 MB | 0.5 |
+
+## How to create a statically compiled Haskell binary
+Haskell is typically dynamically compiled.  However, it is not
+difficult (in most cases) to create a statically compiled binary.
+The advantage is primarily a smaller binary, and improved portability (although if we are using Docker containers, we do not have to worry about portability any more. Yea!)
+
+In order to create a static binary, I had to alter the cabal file.
+In the executable section, add "ld-options: -static".
+In the `stack build` section, add "-fPIC" option.
+
+# and add "--ghc-options=-fPIC" to any stack "build" commands
+# executable webScotty-exe
+#   main-is: Main.hs
+#     ld-options: -static
