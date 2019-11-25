@@ -33,7 +33,9 @@ In order to create a static binary, I had to alter the cabal file.
 In the executable section, add "ld-options: -static".
 In the `stack build` section, add "-fPIC" option.
 
-# and add "--ghc-options=-fPIC" to any stack "build" commands
-# executable webScotty-exe
-#   main-is: Main.hs
-#     ld-options: -static
+```
+and add "--ghc-options=-fPIC" to any stack "build" commands
+executable webScotty-exe
+  main-is: Main.hs
+    ld-options: -static
+```
